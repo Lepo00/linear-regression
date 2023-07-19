@@ -23,7 +23,7 @@ class LinearRegression {
     }
 
     gradientDescent() {
-        const currentGuesses = this.features.map(row => {
+        /*const currentGuesses = this.features.map(row => {
             return this.m * row[0] + this.b;
         })
 
@@ -36,7 +36,17 @@ class LinearRegression {
         })) * 2 / this.features.length;
 
         this.m = this.m - mSlope * this.options.learningRate;
-        this.b = this.b - bSlope * this.options.learningRate;
+        this.b = this.b - bSlope * this.options.learningRate;*/
+
+        const currentGuesses = this.features.matMul(this.weights);
+        const differences = currentGuesses.sub(this.labels);
+
+        const slopes = this.feature
+            .transpose()
+            .matMul(differences)
+            .div(this.features.shape[0]);
+
+        this.weights = this.weights.sub(slopes.mul(this.options.learningRate))
     }
 }
 
