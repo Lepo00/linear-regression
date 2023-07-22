@@ -11,7 +11,7 @@ class LinearRegression {
             options
         );
 
-        this.weights = tf.zeros([2, 1]);
+        this.weights = tf.zeros([this.features.shape[1], 1]);
     }
 
     _processFeature(features) {
@@ -22,7 +22,7 @@ class LinearRegression {
         } else {
             features = this.standardize(features);
         }
-        
+
         features = tf.ones(features.shape[0], 1).concat(features, 1);
         return features;
     }
