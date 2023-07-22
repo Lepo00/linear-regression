@@ -16,7 +16,15 @@ class LinearRegression {
 
     _processFeature(features) {
         features = tf.tensor(features);
-        return tf.ones(features.shape[0], 1).concat(features, 1);
+
+        if (this.mean && this.variance) {
+            features = features.sub(mean).div(variance.pow(.5));
+        } else {
+            features = this.standardize(features);
+        }
+        
+        features = tf.ones(features.shape[0], 1).concat(features, 1);
+        return features;
     }
 
     train() {
@@ -62,6 +70,15 @@ class LinearRegression {
             .div(this.features.shape[0]);
 
         this.weights = this.weights.sub(slopes.mul(this.options.learningRate))
+    }
+
+    standardize(features) {
+        const { mean, variance } = tf.moments(features, 0);
+
+        this.mean = mean;
+        this.variance = variance;
+
+        return features.sub(mean).div(variance.pow(.5));
     }
 }
 
