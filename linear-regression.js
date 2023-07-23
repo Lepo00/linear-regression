@@ -115,6 +115,10 @@ class LinearRegression {
         else
             this.options.learningRate *= 1.05;
     }
+
+    predict(observations) {
+        observations = this._processFeature(observations).matMul(this.weights);
+    }
 }
 
 module.exports = LinearRegression;
