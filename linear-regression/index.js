@@ -3,7 +3,7 @@ const tf = require('@tensorflow/tfjs');
 const loadCSV = require('../load-csv');
 const LinearRegression = require('.');
 
-let { features, labels, testFeatures, testLabels } = loadCSV('./cars.csv', {
+let { features, labels, testFeatures, testLabels } = loadCSV('../data/cars.csv', {
     dataColumns: ['horsepower', 'weight', 'displacement'],
     labelColumns: ['mpg'],
     shuffle: true,
