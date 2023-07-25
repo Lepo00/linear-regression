@@ -45,15 +45,13 @@ class LogisticRegression {
     }
 
     test(testFeatures, testLabels) {
-        testFeatures = this._processFeature(testFeatures);
+        const predictions = this.predict(testFeatures).round();
         testLabels = tf.tensor(testLabels);
 
-        const predictions = testFeatures.matMul(this.weights);
+        const incorrect = predictions.sub(testLabels).abs().sum();
 
-        const ssRes = testLabels.sub(predictions).pow(2).sum().get();
-        const ssTot = testLabels.sub(testLabels.mean()).pow(2).sum().get();
-
-        return 1 - ssRes / ssTot;
+        const accuracy = (predictions.shape[0] - incorrect.get()) / predictions.shape[0];
+        return accuracy;
     }
 
     gradientDescent(features, labels) {
