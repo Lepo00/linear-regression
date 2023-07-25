@@ -103,7 +103,8 @@ class LogisticRegression {
         observations = this._processFeature(observations)
             .matMul(this.weights)
             .sigmoid()
-            .greater(this.options.decisionBoundary);
+            .greater(this.options.decisionBoundary)
+            .cast('float32');
     }
 }
 
