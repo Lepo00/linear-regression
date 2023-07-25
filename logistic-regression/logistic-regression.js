@@ -8,7 +8,7 @@ class LogisticRegression {
         this.mseHistory = [];
 
         this.options = Object.assign(
-            { learningRate: 0.1, iterations: 1000, batchSize: 10 },
+            { learningRate: 0.1, iterations: 1000, batchSize: 10, decisionBoundary: 0.5 },
             options
         );
 
@@ -103,7 +103,7 @@ class LogisticRegression {
         observations = this._processFeature(observations)
             .matMul(this.weights)
             .sigmoid()
-            .greater(0.65);
+            .greater(this.options.decisionBoundary);
     }
 }
 
