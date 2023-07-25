@@ -45,7 +45,7 @@ class LogisticRegression {
     }
 
     test(testFeatures, testLabels) {
-        const predictions = this.predict(testFeatures).round();
+        const predictions = this.predict(testFeatures);
         testLabels = tf.tensor(testLabels);
 
         const incorrect = predictions.sub(testLabels).abs().sum();
@@ -100,7 +100,10 @@ class LogisticRegression {
     }
 
     predict(observations) {
-        observations = this._processFeature(observations).matMul(this.weights).sigmoid();
+        observations = this._processFeature(observations)
+            .matMul(this.weights)
+            .sigmoid()
+            .greater(0.65);
     }
 }
 
