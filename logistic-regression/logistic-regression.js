@@ -5,7 +5,7 @@ class LogisticRegression {
     constructor(features, labels, options) {
         this.features = this._processFeature(features);
         this.labels = tf.tensor(labels);
-        this.mseHistory = [];
+        this.costHistory = [];
 
         this.options = Object.assign(
             { learningRate: 0.1, iterations: 1000, batchSize: 10, decisionBoundary: 0.5 },
@@ -39,7 +39,7 @@ class LogisticRegression {
                 const labelSlice = this.labels.slice([j * this.options.batchSize, 0][this.options.batchSize, -1]);
                 this.gradientDescent(featureSlice, labelSlice);
             }
-            this.recordMSE();
+            this.recordCost();
             this.updateLearningRate();
         }
     }
@@ -75,23 +75,30 @@ class LogisticRegression {
         return features.sub(mean).div(variance.pow(.5));
     }
 
-    recordMSE() {
-        const mse = this.features
-            .matMul(this.weights)
-            .sub(this.labels)
-            .pow(2)
-            .sum()
-            .div(this.features.shape[0])
-            .get();
+    recordCost() {
+        const guesses = this.features.matMul(this.weights).sigmoid();
 
-        this.mseHistory.push(mse);
+        const t1 = this.labels.transpose().matMul(guesses.log());
+        const t2 = this.labels
+            .mul(-1)
+            .add(1)
+            .transpose()
+            .matMul(
+                guesses
+                    .mul(-1)
+                    .add(1)
+                    .log()
+            )
+
+        const cost = t1.add(t2).div(this.features.shape[0]).mul(-1).get(0, 0);
+        this.costHistory.unshift(cost);
     }
 
     updateLearningRate() {
-        if (this.mseHistory.length > 2) return;
+        if (this.costHistory.length > 2) return;
 
-        const lastValue = this.mseHistory[this.mseHistory.length - 1];
-        const secondLast = this.mseHistory[this.mseHistory.length - 2];
+        const lastValue = this.costHistory[this.costHistory.length - 1];
+        const secondLast = this.costHistory[this.costHistory.length - 2];
 
         if (lastValue > secondLast)
             this.options.learningRate /= 2;
