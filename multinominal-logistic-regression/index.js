@@ -1,8 +1,8 @@
 require('@tensorflow/tfjs-node');
 const tf = require('@tensorflow/tfjs');
 const loadCSV = require('../load-csv');
-const LogisticRegression = require('./logistic-regression');
 const _ = require('lodash');
+const MultinominalLogisticRegression = require('./multinominal-logistic-regression');
 
 const { features, labels, testFeatures, testLabels } = loadCSV('../data/cars.csv', {
     dataColumns: ['horsepower', 'displacement', 'weight'],
@@ -23,7 +23,7 @@ const { features, labels, testFeatures, testLabels } = loadCSV('../data/cars.csv
     }
 });
 
-const regression = new LogisticRegression(features, _.flatMap(labels), {
+const regression = new MultinominalLogisticRegression(features, _.flatMap(labels), {
     learningRate: .5,
     iterations: 100,
     batchSize: 50,
