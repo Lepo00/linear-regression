@@ -48,7 +48,7 @@ class LogisticRegression {
         const predictions = this.predict(testFeatures);
         testLabels = tf.tensor(testLabels);
 
-        const incorrect = predictions.sub(testLabels).abs().sum();
+        const incorrect = predictions.sub(testLabels).abs().sum().get();
 
         const accuracy = (predictions.shape[0] - incorrect.get()) / predictions.shape[0];
         return accuracy;
