@@ -32,3 +32,4 @@ const regression = new MultinominalLogisticRegression(features, _.flatMap(labels
 
 regression.train();
 regression.predict([[130, 307, 1.75]]).print();
+console.log(regression.test(testFeatures, _.flatMap(testLabels)));

@@ -1,7 +1,7 @@
 const tf = require('@tensorflow/tfjs');
 const _ = require('lodash');
 
-class LogisticRegression {
+class MultinominalLogisticRegression {
     constructor(features, labels, options) {
         this.features = this._processFeature(features);
         this.labels = tf.tensor(labels);
@@ -46,16 +46,19 @@ class LogisticRegression {
 
     test(testFeatures, testLabels) {
         const predictions = this.predict(testFeatures);
-        testLabels = tf.tensor(testLabels);
+        testLabels = tf.tensor(testLabels).argMax(2);
 
-        const incorrect = predictions.sub(testLabels).abs().sum();
+        const incorrect = predictions
+            .notEqual(testLabels)
+            .sum()
+            .get();
 
         const accuracy = (predictions.shape[0] - incorrect.get()) / predictions.shape[0];
         return accuracy;
     }
 
     gradientDescent(features, labels) {
-        const currentGuesses = features.matMul(this.weights).sigmoid();
+        const currentGuesses = features.matMul(this.weights).softmax();
         const differences = currentGuesses.sub(labels);
 
         const slopes = features
@@ -76,7 +79,7 @@ class LogisticRegression {
     }
 
     recordCost() {
-        const guesses = this.features.matMul(this.weights).sigmoid();
+        const guesses = this.features.matMul(this.weights).softmax();
 
         const t1 = this.labels.transpose().matMul(guesses.log());
         const t2 = this.labels
@@ -109,10 +112,9 @@ class LogisticRegression {
     predict(observations) {
         observations = this._processFeature(observations)
             .matMul(this.weights)
-            .sigmoid()
-            .greater(this.options.decisionBoundary)
-            .cast('float32');
+            .softmax()
+            .argMax(1);
     }
 }
 
-module.exports = LogisticRegression;
+module.exports = MultinominalLogisticRegression;
