@@ -19,7 +19,7 @@ class LogisticRegression {
         features = tf.tensor(features);
 
         if (this.mean && this.variance) {
-            features = features.sub(mean).div(variance.pow(.5));
+            features = features.sub(this.mean).div(this.variance.pow(.5));
         } else {
             features = this.standardize(features);
         }

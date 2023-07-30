@@ -14,11 +14,11 @@ const { features, labels, testFeatures, testLabels } = loadCSV('../data/cars.csv
 });
 
 const regression = new LogisticRegression(features, labels, {
-    learningRate: .5,
+    learningRate: 0.5,
     iterations: 100,
     batchSize: 50,
-    decisionBoundary: .65
+    decisionBoundary: 0.65
 });
 
 regression.train();
-regression.predict([[130,307,1.75]]).print();
+regression.predict([[130, 307, 1.75]]).print();
