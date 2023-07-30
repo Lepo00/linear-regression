@@ -19,12 +19,12 @@ class LinearRegression {
         features = tf.tensor(features);
 
         if (this.mean && this.variance) {
-            features = features.sub(mean).div(variance.pow(.5));
+            features = features.sub(this.mean).div(this.variance.pow(.5));
         } else {
             features = this.standardize(features);
         }
 
-        features = tf.ones(features.shape[0], 1).concat(features, 1);
+        features = tf.ones([features.shape[0], 1]).concat(features, 1);
         return features;
     }
 
@@ -35,8 +35,8 @@ class LinearRegression {
 
         for (let i = 0; i < this.options.iterations; i++) {
             for (let j = 0; j < batchQty; j++) {
-                const featureSlice = this.features.slice([j * this.options.batchSize, 0][this.options.batchSize, -1]);
-                const labelSlice = this.labels.slice([j * this.options.batchSize, 0][this.options.batchSize, -1]);
+                const featureSlice = this.features.slice([j * this.options.batchSize, 0], [this.options.batchSize, -1]);
+                const labelSlice = this.labels.slice([j * this.options.batchSize, 0], [this.options.batchSize, -1]);
                 this.gradientDescent(featureSlice, labelSlice);
             }
             this.recordMSE();

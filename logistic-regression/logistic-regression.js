@@ -24,7 +24,8 @@ class LogisticRegression {
             features = this.standardize(features);
         }
 
-        features = tf.ones(features.shape[0], 1).concat(features, 1);
+
+        features = tf.ones([features.shape[0], 1]).concat(features, 1);
         return features;
     }
 
@@ -35,8 +36,8 @@ class LogisticRegression {
 
         for (let i = 0; i < this.options.iterations; i++) {
             for (let j = 0; j < batchQty; j++) {
-                const featureSlice = this.features.slice([j * this.options.batchSize, 0][this.options.batchSize, -1]);
-                const labelSlice = this.labels.slice([j * this.options.batchSize, 0][this.options.batchSize, -1]);
+                const featureSlice = this.features.slice([j * this.options.batchSize, 0], [this.options.batchSize, -1]);
+                const labelSlice = this.labels.slice([j * this.options.batchSize, 0], [this.options.batchSize, -1]);
                 this.gradientDescent(featureSlice, labelSlice);
             }
             this.recordCost();
@@ -50,7 +51,7 @@ class LogisticRegression {
 
         const incorrect = predictions.sub(testLabels).abs().sum().get();
 
-        const accuracy = (predictions.shape[0] - incorrect.get()) / predictions.shape[0];
+        const accuracy = (predictions.shape[0] - incorrect) / predictions.shape[0];
         return accuracy;
     }
 
@@ -107,7 +108,7 @@ class LogisticRegression {
     }
 
     predict(observations) {
-        observations = this._processFeature(observations)
+        return this._processFeature(observations)
             .matMul(this.weights)
             .sigmoid()
             .greater(this.options.decisionBoundary)

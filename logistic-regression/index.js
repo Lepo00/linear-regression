@@ -21,4 +21,5 @@ const regression = new LogisticRegression(features, labels, {
 });
 
 regression.train();
-regression.predict([[130, 307, 1.75]]).print();
+const accuracy = regression.test(testFeatures, testLabels);
+console.log("Accuracy:", accuracy)
