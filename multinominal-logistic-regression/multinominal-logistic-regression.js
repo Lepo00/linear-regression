@@ -19,12 +19,12 @@ class MultinominalLogisticRegression {
         features = tf.tensor(features);
 
         if (this.mean && this.variance) {
-            features = features.sub(mean).div(variance.pow(.5));
+            features = features.sub(this.mean).div(this.variance.pow(.5));
         } else {
             features = this.standardize(features);
         }
 
-        features = tf.ones(features.shape[0], 1).concat(features, 1);
+        features = tf.ones([features.shape[0], 1]).concat(features, 1);
         return features;
     }
 
@@ -35,8 +35,8 @@ class MultinominalLogisticRegression {
 
         for (let i = 0; i < this.options.iterations; i++) {
             for (let j = 0; j < batchQty; j++) {
-                const featureSlice = this.features.slice([j * this.options.batchSize, 0][this.options.batchSize, -1]);
-                const labelSlice = this.labels.slice([j * this.options.batchSize, 0][this.options.batchSize, -1]);
+                const featureSlice = this.features.slice([j * this.options.batchSize, 0], [this.options.batchSize, -1]);
+                const labelSlice = this.labels.slice([j * this.options.batchSize, 0], [this.options.batchSize, -1]);
                 this.gradientDescent(featureSlice, labelSlice);
             }
             this.recordCost();
@@ -46,14 +46,14 @@ class MultinominalLogisticRegression {
 
     test(testFeatures, testLabels) {
         const predictions = this.predict(testFeatures);
-        testLabels = tf.tensor(testLabels).argMax(2);
+        testLabels = tf.tensor(testLabels).argMax(1);
 
         const incorrect = predictions
             .notEqual(testLabels)
             .sum()
             .get();
 
-        const accuracy = (predictions.shape[0] - incorrect.get()) / predictions.shape[0];
+        const accuracy = (predictions.shape[0] - incorrect) / predictions.shape[0];
         return accuracy;
     }
 
@@ -110,7 +110,7 @@ class MultinominalLogisticRegression {
     }
 
     predict(observations) {
-        observations = this._processFeature(observations)
+        return this._processFeature(observations)
             .matMul(this.weights)
             .softmax()
             .argMax(1);
