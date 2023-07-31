@@ -48,15 +48,18 @@ class MultinominalLogisticRegressionImage {
 
     test(testFeatures, testLabels) {
         const predictions = this.predict(testFeatures);
-        testLabels = tf.tensor(testLabels).argMax(1);
 
-        const incorrect = predictions
-            .notEqual(testLabels)
-            .sum()
-            .get();
+        const incorrect = tf.tidy(() => {
+            testLabels = tf.tensor(testLabels).argMax(1);
+
+            return predictions
+                .notEqual(testLabels)
+                .sum()
+                .get();
+        })
 
         const accuracy = (predictions.shape[0] - incorrect) / predictions.shape[0];
-        return accuracy;
+        return accuracy * 100;
     }
 
     gradientDescent(features, labels) {
@@ -82,21 +85,24 @@ class MultinominalLogisticRegressionImage {
     }
 
     recordCost() {
-        const guesses = this.features.matMul(this.weights).softmax();
+        const cost = tf.tidy(() => {
+            const guesses = this.features.matMul(this.weights).softmax();
 
-        const t1 = this.labels.transpose().matMul(guesses.log());
-        const t2 = this.labels
-            .mul(-1)
-            .add(1)
-            .transpose()
-            .matMul(
-                guesses
-                    .mul(-1)
-                    .add(1)
-                    .log()
-            )
+            const t1 = this.labels.transpose().matMul(guesses.add(1e-7).log());
+            const t2 = this.labels
+                .mul(-1)
+                .add(1)
+                .transpose()
+                .matMul(
+                    guesses
+                        .mul(-1)
+                        .add(1)
+                        .add(1e-7) // add a constant to avoid log(0)
+                        .log()
+                )
 
-        const cost = t1.add(t2).div(this.features.shape[0]).mul(-1).get(0, 0);
+            return t1.add(t2).div(this.features.shape[0]).mul(-1).get(0, 0);
+        });
         this.costHistory.unshift(cost);
     }
 

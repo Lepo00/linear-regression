@@ -18,13 +18,13 @@ function loadData() {
 const { features, labels } = loadData();
 const regression = new MultinominalLogisticRegressionImage(features, labels, {
     learningRate: 1,
-    iterations: 20,
-    batchSize: 100
+    iterations: 40,
+    batchSize: 500
 });
 
 regression.train();
 
-const testingData = mnist.testing(0, 1000);
+const testingData = mnist.testing(0, 10000);
 const testFeatures = testingData.images.values.map(image => _.flatMap(image));
 const testEncodingLabels = testingData.labels.values.map(label => {
     const row = new Array(10).fill(0);
