@@ -8,7 +8,7 @@ class MultinominalLogisticRegressionImage {
         this.costHistory = [];
 
         this.options = Object.assign(
-            { learningRate: 0.1, iterations: 1000, batchSize: 10, decisionBoundary: 0.5 },
+            { learningRate: 0.1, iterations: 1000, batchSize: 10},
             options
         );
 
